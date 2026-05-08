@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin Panel — Malzz Hosting</title>
+<link rel="stylesheet" href="/css/main.css"/>
+<style>
+.admin-chip{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(245,158,11,.08));color:var(--gold);border:1px solid rgba(251,191,36,.2);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:99px}
+.metric-bar{height:5px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;margin-top:6px}
+.metric-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--violet));transition:width 1s cubic-bezier(.4,0,.2,1)}
+.tab-btn{padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;color:var(--dim);background:none;transition:all .2s}
+.tab-btn.active{background:var(--blue-d);color:var(--blue);border-color:rgba(79,142,247,.2)}
+.tab-btn:hover:not(.active){background:rgba(255,255,255,.04);color:var(--text)}
+</style>
+</head>
+<body>
+<div class="blob blob-a"></div><div class="blob blob-b"></div>
+<div class="backdrop" id="backdrop" onclick="closeSidebar()"></div>
+
+<div class="app">
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">🚀</div>
+    <div>
+      <div class="logo-text">Malzz<span>Hosting</span></div>
+      <div class="logo-badge" style="color:var(--gold)">⚙️ Admin Panel</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" data-page="overview" onclick="goto('overview')">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-section">Management</div>
+    <div class="nav-item" data-page="servers" onclick="goto('servers')">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="4" rx="1"/><rect x="2" y="10" width="20" height="4" rx="1"/><rect x="2" y="17" width="20" height="4" rx="1"/></svg>
+      Semua Server
+    </div>
+    <div class="nav-item" data-page="users" onclick="goto('users')">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Kelola User
+    </div>
+    <div class="nav-item" data-page="create-server" onclick="goto('create-server')">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Buat Server
+    </div>
+    <div class="nav-section">System</div>
+    <div class="nav-item" data-page="activity" onclick="goto('activity')">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+      Activity Logs
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar" id="sb-avatar">A</div>
+      <div style="flex:1;min-width:0">
+        <div class="user-name" id="sb-name">Admin</div>
+        <span class="admin-chip">Admin</span>
+      </div>
+      <button onclick="logout()" title="Logout" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:3px;border-radius:6px;display:flex;transition:color .2s" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--muted)'">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="mobile-toggle" onclick="openSidebar()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="page-title" id="topbar-title">Overview</span>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-wrap">
+        <button class="btn btn-ghost btn-icon notif-btn" id="notif-btn" onclick="toggleNotif()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="notif-dot" id="notif-dot" style="display:none">0</div>
+        </button>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-panel-head"><span>Notifikasi</span></div>
+          <div class="notif-list" id="notif-list"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(245,158,11,.05));border:1px solid rgba(251,191,36,.2);border-radius:9px;padding:5px 12px">
+        <div class="user-avatar" id="top-avatar" style="width:26px;height:26px;font-size:11px;background:linear-gradient(135deg,var(--gold),var(--amber))">A</div>
+        <span style="font-size:13px;font-weight:600;color:var(--gold)" id="top-name">Admin</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ═══ OVERVIEW ═══ -->
+    <div class="page active" id="page-overview">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Overview</h1>
+          <p>Ringkasan seluruh infrastruktur Pterodactyl</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadOverview()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card stat-blue"><div class="stat-icon si-blue">🖥️</div><div class="stat-val" id="ov-servers">—</div><div class="stat-lbl">Total Server</div></div>
+        <div class="stat-card stat-green"><div class="stat-icon si-green">✅</div><div class="stat-val" id="ov-online">—</div><div class="stat-lbl">Server Online</div></div>
+        <div class="stat-card stat-purple"><div class="stat-icon si-purple">👥</div><div class="stat-val" id="ov-users">—</div><div class="stat-lbl">Total User</div></div>
+        <div class="stat-card stat-amber"><div class="stat-icon si-amber">📊</div><div class="stat-val" id="ov-created">—</div><div class="stat-lbl">Total Dibuat</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px" id="ov-grid">
+        <!-- Server quick list -->
+        <div class="table-wrap">
+          <div class="table-head"><div><div class="table-title">Server Terbaru</div><div class="table-subtitle">Live status dari Pterodactyl</div></div><button class="btn btn-ghost btn-sm" onclick="goto('servers')">Lihat semua</button></div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Nama</th><th>Status</th><th>RAM</th><th>CPU</th><th>Owner</th></tr></thead>
+              <tbody id="ov-server-list"></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Activity -->
+        <div class="card card-p">
+          <div style="font-size:14px;font-weight:600;margin-bottom:14px">Aktivitas Terkini</div>
+          <div id="ov-activity"></div>
+        </div>
+      </div>
+
+      <!-- Notification feed -->
+      <div class="card card-p">
+        <div style="font-size:14px;font-weight:600;margin-bottom:14px">📬 Notifikasi System</div>
+        <div id="ov-notifs"></div>
+      </div>
+    </div>
+
+    <!-- ═══ ALL SERVERS ═══ -->
+    <div class="page" id="page-servers">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Semua Server</h1><p>Kelola semua server Pterodactyl</p></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="search-box">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Cari server..." oninput="filterServers(this.value)" id="server-search"/>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadAllServers()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Server</th><th>Status</th><th>RAM</th><th>Disk</th><th>CPU</th><th>Owner</th><th>Plan</th><th>Aksi</th></tr></thead>
+            <tbody id="all-servers-body"></tbody>
+          </table>
+        </div>
+        <div id="server-pagination" class="pagination"></div>
+      </div>
+    </div>
+
+    <!-- ═══ USERS ═══ -->
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Kelola User</h1><p>Buat, edit, dan hapus akun user panel</p></div>
+        <button class="btn btn-primary btn-sm" onclick="openCreateUser()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Buat User Baru
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:6px;margin-bottom:18px">
+        <button class="tab-btn active" id="tab-all" onclick="filterUserTab('all')">Semua</button>
+        <button class="tab-btn" id="tab-premium" onclick="filterUserTab('premium')">⚡ Premium</button>
+        <button class="tab-btn" id="tab-free" onclick="filterUserTab('free')">Free</button>
+        <button class="tab-btn" id="tab-banned" onclick="filterUserTab('banned')">🚫 Banned</button>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-head">
+          <div><div class="table-title">Daftar User</div></div>
+          <div class="search-box">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Cari user..." oninput="filterUsers(this.value)"/>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>User</th><th>Email</th><th>Plan</th><th>Telegram</th><th>Status</th><th>Dibuat</th><th>Aksi</th></tr></thead>
+            <tbody id="users-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CREATE SERVER (Admin) ═══ -->
+    <div class="page" id="page-create-server">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Buat Server</h1><p>Deploy server baru — CPU 0 = unlimited (premium)</p></div>
+      </div>
+      <div style="max-width:680px">
+        <div class="info-box">
+          <strong>ℹ️ Admin Mode:</strong> Kamu bisa set CPU = 0 untuk unlimited. Semua resource unlimited tidak dibatasi plan.
+        </div>
+        <div class="card card-p">
+          <form id="admin-create-form">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:16px">👤 Info User Pterodactyl</div>
+            <div class="form-grid" style="margin-bottom:6px">
+              <div class="form-group" style="margin-bottom:0"><label class="form-label">Username <span>*</span></label><input class="input" type="text" name="username" placeholder="pterodactyl_username" required/></div>
+              <div class="form-group" style="margin-bottom:0"><label class="form-label">Email <span>*</span></label><input class="input" type="email" name="email" placeholder="user@email.com" required/></div>
+            </div>
+            <div class="form-grid" style="margin-bottom:20px">
+              <div class="form-group" style="margin-bottom:0"><label class="form-label">Nama Tampilan</label><input class="input" type="text" name="displayName" placeholder="Nama User"/></div>
+              <div class="form-group" style="margin-bottom:0"><label class="form-label">Telegram</label><input class="input" type="text" name="telegramId" placeholder="@username"/></div>
+            </div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:16px">⚙️ Server Config</div>
+            <div class="form-group"><label class="form-label">Nama Server</label><input class="input" type="text" name="serverName" placeholder="Auto-generated dari username"/></div>
+            <!-- RAM presets admin (semua bisa) -->
+            <div class="form-group">
+              <label class="form-label">RAM — Preset</label>
+              <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px">
+                <button type="button" class="btn btn-ghost btn-sm ap" data-f="ram" data-v="512">512 MB</button>
+                <button type="button" class="btn btn-ghost btn-sm ap" data-f="ram" data-v="1024">1 GB</button>
+                <button type="button" class="btn btn-ghost btn-sm ap" data-f="ram" data-v="2048">2 GB</button>
+                <button type="button" class="btn btn-ghost btn-sm ap" data-f="ram" data-v="4096">4 GB</button>
+                <button type="button" class="btn btn-ghost btn-sm ap" data-f="ram" data-v="8192">8 GB</button>
+                <button type="button" class="btn btn-ghost btn-sm ap" data-f="ram" data-v="16384">16 GB</button>
+                <button type="button" class="btn btn-gold btn-sm ap" data-f="ram" data-v="0">∞ Unlimited</button>
+              </div>
+              <input class="input input-mono" type="number" name="ram" id="a-ram" placeholder="1024 MB (0 = unlimited)" min="0"/>
+            </div>
+            <div class="form-grid-3" style="margin-bottom:20px">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Disk (MB)</label>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <input class="input input-mono" type="number" name="disk" id="a-disk" placeholder="5120 (0=unlimited)" min="0"/>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">CPU (%) <span style="color:var(--gold);font-size:10px">0=unlimited</span></label>
+                <input class="input input-mono" type="number" name="cpu" id="a-cpu" placeholder="100 (0 = unlimited)" min="0"/>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Database</label>
+                <select class="input" name="databases"><option value="0">0</option><option value="1" selected>1</option><option value="2">2</option><option value="5">5</option><option value="10">10</option></select>
+              </div>
+            </div>
+            <!-- Preview -->
+            <div style="background:rgba(251,191,36,.03);border:1px solid rgba(251,191,36,.15);border-radius:10px;padding:14px 16px;margin-bottom:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+              <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">RAM</div><div class="mono" style="font-size:13px;font-weight:600;color:var(--gold)" id="a-prev-ram">—</div></div>
+              <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">DISK</div><div class="mono" style="font-size:13px;font-weight:600;color:var(--gold)" id="a-prev-disk">—</div></div>
+              <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">CPU</div><div class="mono" style="font-size:13px;font-weight:600;color:var(--gold)" id="a-prev-cpu">—</div></div>
+              <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">USER</div><div class="mono" style="font-size:13px;font-weight:600" id="a-prev-user">—</div></div>
+            </div>
+            <button type="submit" id="admin-create-btn" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 0 30px rgba(79,142,247,.3)">
+              <span class="btn-spinner"></span>
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Deploy Server (Admin)
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ACTIVITY ═══ -->
+    <div class="page" id="page-activity">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Activity Logs</h1><p>Semua aktivitas sistem</p></div>
+        <button class="btn btn-ghost btn-sm" onclick="loadActivity()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="card card-p"><div id="full-activity"></div></div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<!-- MODAL: Create User -->
+<div class="modal-overlay" id="modal-create-user" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-icon" style="background:var(--violet-d)">👤</div>
+      <div><h3>Buat User Baru</h3><p>Tambah akun ke panel Malzz Hosting</p></div>
+      <button class="modal-close" onclick="document.getElementById('modal-create-user').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="create-user-form">
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Username <span>*</span></label><input class="input" type="text" name="username" placeholder="username" required/></div>
+          <div class="form-group"><label class="form-label">Email <span>*</span></label><input class="input" type="email" name="email" placeholder="email@example.com" required/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Password <span>*</span></label><input class="input" type="text" name="password" placeholder="Password untuk user ini" required/></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Plan</label>
+            <select class="input" name="plan">
+              <option value="free">Free</option>
+              <option value="premium">⚡ Premium</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Nama Tampilan</label><input class="input" type="text" name="displayName" placeholder="Nama lengkap"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Telegram ID</label><input class="input" type="text" name="telegramId" placeholder="@username atau ID"/></div>
+        <div class="warn-box"><strong>⚠️ Note:</strong> Password disimpan as-is. Pastikan user langsung ganti setelah login pertama.</div>
+        <button type="submit" id="cu-btn" class="btn btn-primary" style="width:100%;justify-content:center;height:44px">
+          <span class="btn-spinner"></span>
+          Buat Akun User
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Edit User -->
+<div class="modal-overlay" id="modal-edit-user" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-icon" style="background:var(--blue-d)">✏️</div>
+      <div><h3>Edit User</h3><p id="edit-user-subtitle">Update plan atau status</p></div>
+      <button class="modal-close" onclick="document.getElementById('modal-edit-user').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-user-id"/>
+      <div class="form-group">
+        <label class="form-label">Plan</label>
+        <select class="input" id="edit-plan">
+          <option value="free">Free</option>
+          <option value="premium">⚡ Premium</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password Baru (kosongkan jika tidak diganti)</label>
+        <input class="input" type="text" id="edit-password" placeholder="Password baru..."/>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <input type="checkbox" id="edit-banned" style="width:16px;height:16px;accent-color:var(--rose);cursor:pointer"/>
+        <label for="edit-banned" style="font-size:13.5px;cursor:pointer">🚫 Ban user ini</label>
+      </div>
+      <button onclick="saveEditUser()" id="eu-btn" class="btn btn-primary" style="width:100%;justify-content:center;height:44px">
+        <span class="btn-spinner"></span>
+        Simpan Perubahan
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<script src="/js/api.js"></script>
+<script>
+if (!requireAuth(true)) throw 0;
+const user = API.user();
+
+// ── Init ──
+function initAdmin() {
+  document.getElementById('sb-avatar').textContent = user.avatar || 'A';
+  document.getElementById('sb-name').textContent = user.displayName || user.username;
+  document.getElementById('top-avatar').textContent = user.avatar || 'A';
+  document.getElementById('top-name').textContent = user.username;
+
+  // Admin preset buttons
+  document.querySelectorAll('.ap').forEach(b => {
+    b.addEventListener('click', () => {
+      const f = b.dataset.f, v = b.dataset.v;
+      document.getElementById(`a-${f}`).value = v;
+      document.querySelectorAll(`.ap[data-f="${f}"]`).forEach(x => { x.classList.remove('btn-primary','btn-gold'); x.classList.add('btn-ghost'); });
+      b.classList.remove('btn-ghost'); b.classList.add(v==='0'?'btn-gold':'btn-primary');
+      adminPreview();
+    });
+  });
+  ['a-ram','a-disk','a-cpu'].forEach(id => document.getElementById(id)?.addEventListener('input', adminPreview));
+  document.querySelector('[name=username]')?.addEventListener('input', adminPreview);
+}
+
+function adminPreview() {
+  const ram = document.getElementById('a-ram')?.value;
+  const disk = document.getElementById('a-disk')?.value;
+  const cpu = document.getElementById('a-cpu')?.value;
+  const uname = document.querySelector('#page-create-server [name=username]')?.value;
+  document.getElementById('a-prev-ram').textContent = ram !== '' ? Utils.fmtRam(parseInt(ram)) : '—';
+  document.getElementById('a-prev-disk').textContent = disk !== '' ? Utils.fmtDisk(parseInt(disk)) : '—';
+  document.getElementById('a-prev-cpu').textContent = cpu !== '' ? Utils.fmtCpu(cpu) : '—';
+  document.getElementById('a-prev-user').textContent = uname || '—';
+}
+
+// ── Nav ──
+const titles = { overview:'Overview', servers:'Semua Server', users:'Kelola User', 'create-server':'Buat Server', activity:'Activity Logs' };
+function goto(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+  document.getElementById(`page-${id}`)?.classList.add('active');
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+  document.getElementById('sidebar')?.classList.remove('open');
+  document.getElementById('backdrop')?.classList.remove('open');
+  if (id === 'servers') loadAllServers();
+  if (id === 'users') loadUsers();
+  if (id === 'activity') loadActivity();
+  if (id === 'overview') loadOverview();
+}
+
+function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('backdrop').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('backdrop').classList.remove('open'); }
+
+let notifOpen = false;
+function toggleNotif() { notifOpen = !notifOpen; document.getElementById('notif-panel').classList.toggle('open', notifOpen); }
+document.addEventListener('click', e => { if (notifOpen && !document.getElementById('notif-btn').contains(e.target) && !document.getElementById('notif-panel').contains(e.target)) { notifOpen=false; document.getElementById('notif-panel').classList.remove('open'); }});
+
+// ── Overview ──
+async function loadOverview() {
+  const res = await API.get('/dashboard');
+  if (!res.success) return;
+  const d = res.data;
+  document.getElementById('ov-servers').textContent = d.overview.totalServers ?? '—';
+  document.getElementById('ov-online').textContent = d.overview.onlineServers ?? '—';
+  document.getElementById('ov-users').textContent = d.overview.totalUsers ?? '—';
+  document.getElementById('ov-created').textContent = d.overview.totalCreated ?? '—';
+
+  // Server list
+  const sl = document.getElementById('ov-server-list');
+  if (!d.recentServers?.length) {
+    sl.innerHTML = `<tr><td colspan="5"><div class="empty" style="padding:28px"><div class="empty-icon">🖥️</div><div class="empty-title">Belum ada server</div></div></td></tr>`;
+  } else {
+    sl.innerHTML = d.recentServers.map(s => `
+      <tr>
+        <td><div style="font-weight:600;font-size:13px">${Utils.truncate(s.name,26)}</div><div class="mono" style="font-size:10.5px;color:var(--muted)">${(s.uuid||'').slice(0,8)}...</div></td>
+        <td>${Utils.statusBadge(s.status)}</td>
+        <td class="mono" style="font-size:12px;color:var(--dim)">${Utils.fmtRam(s.ram)}</td>
+        <td class="mono" style="font-size:12px;color:var(--dim)">${Utils.fmtCpu(s.cpu)}</td>
+        <td style="font-size:12.5px;color:var(--dim)">${s.owner||'—'}</td>
+      </tr>`).join('');
+  }
+
+  // Activity
+  document.getElementById('ov-activity').innerHTML = d.activity?.length ? renderActivity(d.activity.slice(0,6)) : '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">Belum ada aktivitas</div>';
+
+  // Notifs
+  const nl = document.getElementById('notif-list');
+  const ovn = document.getElementById('ov-notifs');
+  if (!d.notifications?.length) {
+    nl.innerHTML = '<div style="padding:16px;text-align:center;font-size:12.5px;color:var(--muted)">Tidak ada notifikasi</div>';
+    ovn.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">Tidak ada notifikasi</div>';
+    document.getElementById('notif-dot').style.display = 'none';
+  } else {
+    nl.innerHTML = d.notifications.map(n => `<div class="notif-item"><div class="notif-item-title">${n.title}</div><div class="notif-item-msg">${n.message}</div><div class="notif-item-time">${Utils.timeAgo(n.createdAt)}</div></div>`).join('');
+    ovn.innerHTML = d.notifications.map(n => `<div class="activity-item"><div class="activity-icon-wrap" style="background:${n.type==='success'?'var(--emerald-d)':n.type==='error'?'var(--rose-d)':'var(--blue-d)'}">📬</div><div><div class="activity-text">${n.title}</div><div class="activity-meta">${n.message} · ${Utils.timeAgo(n.createdAt)}</div></div></div>`).join('');
+    document.getElementById('notif-dot').style.display = 'flex';
+    document.getElementById('notif-dot').textContent = d.notifications.length > 9 ? '9+' : d.notifications.length;
+  }
+}
+
+// ── All Servers ──
+let allServers = [], serverSearch = '';
+async function loadAllServers() {
+  const tbody = document.getElementById('all-servers-body');
+  tbody.innerHTML = `<tr><td colspan="8"><div class="skel" style="height:40px;margin:8px 16px;border-radius:8px"></div></td></tr>`.repeat(4);
+  const res = await API.get('/servers');
+  if (!res.success) { Toast.err('Gagal memuat', res.message); return; }
+  allServers = res.data || [];
+  renderServers(allServers);
+}
+
+function filterServers(q) { serverSearch = q.toLowerCase(); renderServers(allServers.filter(s => s.name?.toLowerCase().includes(serverSearch) || s.owner?.toLowerCase().includes(serverSearch) || s.uuid?.toLowerCase().includes(serverSearch))); }
+
+function renderServers(servers) {
+  const tbody = document.getElementById('all-servers-body');
+  if (!servers.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">🖥️</div><div class="empty-title">Tidak ada server</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = servers.map(s => `
+    <tr>
+      <td><div style="font-weight:600;font-size:13.5px">${Utils.truncate(s.name,26)}</div><div class="mono" style="font-size:10.5px;color:var(--muted)">#${s.id} · ${(s.uuid||'').slice(0,8)}...</div></td>
+      <td>${Utils.statusBadge(s.status)}</td>
+      <td class="mono" style="font-size:12px;color:var(--dim)">${Utils.fmtRam(s.ram)}</td>
+      <td class="mono" style="font-size:12px;color:var(--dim)">${Utils.fmtDisk(s.disk)}</td>
+      <td class="mono" style="font-size:12px;color:var(--dim)">${Utils.fmtCpu(s.cpu)}</td>
+      <td style="font-size:12.5px">${s.owner||'—'} <br><span style="font-size:10.5px;color:var(--muted)">${s.ownerEmail||''}</span></td>
+      <td>${Utils.planBadge(s.plan||'free')}</td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteServer(${s.id},'${s.name}')">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Hapus
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+async function deleteServer(id, name) {
+  const ok = await Modal.confirm('Hapus Server', `Yakin hapus server "<strong>${name}</strong>"?<br>Tindakan ini tidak bisa dibatalkan.`);
+  if (!ok) return;
+  const res = await API.del(`/servers/${id}`);
+  if (res.success) { Toast.ok('Server dihapus', `"${name}" berhasil dihapus.`); loadAllServers(); }
+  else Toast.err('Gagal hapus', res.message);
+}
+
+// ── Users ──
+let allUsers = [], userTab = 'all';
+async function loadUsers() {
+  const tbody = document.getElementById('users-body');
+  tbody.innerHTML = `<tr><td colspan="7"><div class="skel" style="height:40px;margin:8px 16px;border-radius:8px"></div></td></tr>`.repeat(3);
+  const res = await API.get('/users');
+  if (!res.success) { Toast.err('Gagal memuat', res.message); return; }
+  allUsers = res.data || [];
+  renderUsers(allUsers);
+}
+
+function filterUserTab(tab) {
+  userTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`)?.classList.add('active');
+  let filtered = allUsers;
+  if (tab === 'premium') filtered = allUsers.filter(u => u.plan === 'premium');
+  if (tab === 'free') filtered = allUsers.filter(u => u.plan === 'free' || !u.plan);
+  if (tab === 'banned') filtered = allUsers.filter(u => u.banned);
+  renderUsers(filtered);
+}
+
+function filterUsers(q) {
+  const low = q.toLowerCase();
+  let base = allUsers;
+  if (userTab === 'premium') base = allUsers.filter(u => u.plan === 'premium');
+  if (userTab === 'free') base = allUsers.filter(u => u.plan === 'free' || !u.plan);
+  if (userTab === 'banned') base = allUsers.filter(u => u.banned);
+  renderUsers(base.filter(u => u.username?.toLowerCase().includes(low) || u.email?.toLowerCase().includes(low)));
+}
+
+function renderUsers(users) {
+  const tbody = document.getElementById('users-body');
+  if (!users.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Tidak ada user</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--violet));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${u.username?.[0]?.toUpperCase()||'U'}</div>
+          <div>
+            <div style="font-weight:600;font-size:13.5px">${u.displayName||u.username}</div>
+            <div style="font-size:11px;color:var(--muted)">@${u.username}</div>
+          </div>
+        </div>
+      </td>
+      <td style="font-size:12.5px;color:var(--dim)">${u.email}</td>
+      <td>${Utils.planBadge(u.plan||'free')}</td>
+      <td style="font-size:12.5px;color:var(--dim)">${u.telegramId||'—'}</td>
+      <td>${u.banned ? '<span class="badge badge-offline">🚫 Banned</span>' : '<span class="badge badge-online">Aktif</span>'}</td>
+      <td style="font-size:12px;color:var(--muted)">${Utils.timeAgo(u.createdAt)}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='openEditUser(${JSON.stringify(u)})'>Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}','${u.username}')">Hapus</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function openCreateUser() { document.getElementById('create-user-form')?.reset(); document.getElementById('modal-create-user').classList.add('open'); }
+
+function openEditUser(u) {
+  document.getElementById('edit-user-id').value = u.id;
+  document.getElementById('edit-user-subtitle').textContent = `@${u.username} · ${u.email}`;
+  document.getElementById('edit-plan').value = u.plan || 'free';
+  document.getElementById('edit-banned').checked = u.banned || false;
+  document.getElementById('edit-password').value = '';
+  document.getElementById('modal-edit-user').classList.add('open');
+}
+
+async function saveEditUser() {
+  const btn = document.getElementById('eu-btn');
+  Utils.setLoading(btn, true);
+  const id = document.getElementById('edit-user-id').value;
+  const updates = {
+    plan: document.getElementById('edit-plan').value,
+    banned: document.getElementById('edit-banned').checked
+  };
+  const newPw = document.getElementById('edit-password').value;
+  if (newPw) updates.password = newPw;
+  const res = await API.patch(`/users/${id}`, updates);
+  Utils.setLoading(btn, false);
+  if (res.success) { Toast.ok('User diupdate!'); document.getElementById('modal-edit-user').classList.remove('open'); loadUsers(); }
+  else Toast.err('Gagal', res.message);
+}
+
+async function deleteUser(id, username) {
+  const ok = await Modal.confirm('Hapus User', `Yakin hapus user "<strong>${username}</strong>"?`);
+  if (!ok) return;
+  const res = await API.del(`/users/${id}`);
+  if (res.success) { Toast.ok('User dihapus', `${username} berhasil dihapus.`); loadUsers(); }
+  else Toast.err('Gagal', res.message);
+}
+
+document.getElementById('create-user-form')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('cu-btn');
+  Utils.setLoading(btn, true);
+  const fd = new FormData(e.target);
+  const data = Object.fromEntries(fd.entries());
+  const res = await API.post('/users', data);
+  Utils.setLoading(btn, false);
+  if (res.success) {
+    Toast.ok('User dibuat!', `Akun ${data.username} (${data.plan}) berhasil dibuat.`);
+    document.getElementById('modal-create-user').classList.remove('open');
+    e.target.reset();
+    loadUsers();
+  } else Toast.err('Gagal buat user', res.message);
+});
+
+// ── Admin Create Server ──
+document.getElementById('admin-create-form')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('admin-create-btn');
+  Utils.setLoading(btn, true);
+  const fd = new FormData(e.target);
+  const data = Object.fromEntries(fd.entries());
+  data.ram = parseInt(data.ram) || 1024;
+  data.disk = parseInt(data.disk) || 5120;
+  data.cpu = parseInt(data.cpu) || 0;
+  const res = await API.post('/servers', data);
+  Utils.setLoading(btn, false);
+  if (res.success) { Toast.ok('Server dibuat! 🚀', `Server untuk ${data.username} siap.`); e.target.reset(); adminPreview(); goto('servers'); }
+  else Toast.err('Gagal', res.message);
+});
+
+// ── Activity ──
+async function loadActivity() {
+  const el = document.getElementById('full-activity');
+  el.innerHTML = '<div class="skel" style="height:50px;margin-bottom:8px;border-radius:8px"></div>'.repeat(6);
+  const res = await API.get('/activity?limit=100');
+  if (!res.success) return;
+  el.innerHTML = res.data.length ? renderActivity(res.data) : '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Belum ada log</div></div>';
+}
+
+function renderActivity(items) {
+  const icons = { login:'🔑',server_created:'🖥️',server_deleted:'🗑️',user_created:'👤',user_deleted:'❌',user_updated:'✏️',logout:'🚪' };
+  const bgs = { login:'var(--blue-d)',server_created:'var(--emerald-d)',server_deleted:'var(--rose-d)',user_created:'var(--violet-d)',user_deleted:'var(--rose-d)',user_updated:'rgba(245,158,11,.1)',logout:'rgba(107,114,128,.1)' };
+  return items.map(a => `
+    <div class="activity-item">
+      <div class="activity-icon-wrap" style="background:${bgs[a.type]||'var(--card2)'}">${icons[a.type]||'📝'}</div>
+      <div>
+        <div class="activity-text">${a.detail || a.type}</div>
+        <div class="activity-meta">${Utils.timeAgo(a.createdAt)} · <span style="color:${a.role==='admin'?'var(--gold)':'var(--blue)'}">${a.actor||'system'}</span> (${a.role||'system'})</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Grid responsive ──
+const ogMQ = window.matchMedia('(max-width:960px)');
+function fixOvGrid(e) { const g = document.getElementById('ov-grid'); if(g) g.style.gridTemplateColumns = e.matches ? '1fr' : '2fr 1fr'; }
+ogMQ.addEventListener('change', fixOvGrid); fixOvGrid(ogMQ);
+
+function logout() { API.clearSession(); location.href = '/pages/login.html'; }
+
+// ── Start ──
+initAdmin();
+loadOverview();
+</script>
+</body>
+</html>
