@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Login — Malzz Hosting</title>
+<link rel="stylesheet" href="/css/main.css"/>
+<style>
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-wrap{width:100%;max-width:400px;position:relative;z-index:1}
+.login-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:24px;transition:color .2s;padding:6px 0}
+.login-back:hover{color:var(--text)}
+.login-card{background:rgba(13,16,24,0.95);border:1px solid var(--border2);border-radius:22px;padding:40px;box-shadow:0 32px 80px rgba(0,0,0,.6);backdrop-filter:blur(30px)}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.login-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.8px;margin-bottom:6px}
+.login-sub{font-size:13.5px;color:var(--dim);margin-bottom:30px;line-height:1.5}
+.pw-wrap{position:relative}
+.pw-wrap .input{padding-right:42px}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;display:flex;align-items:center;transition:color .2s}
+.pw-toggle:hover{color:var(--text)}
+.login-err{display:none;background:rgba(244,63,94,0.07);border:1px solid rgba(244,63,94,0.2);border-radius:9px;padding:11px 14px;font-size:13px;color:var(--rose);margin-bottom:16px;line-height:1.5}
+.login-footer{margin-top:24px;padding-top:22px;border-top:1px solid var(--border);text-align:center;font-size:12.5px;color:var(--muted)}
+.login-footer a{color:var(--blue);text-decoration:none;font-weight:500}
+.login-footer a:hover{text-decoration:underline}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.shake{animation:shake .4s ease}
+</style>
+</head>
+<body>
+<div class="blob blob-a"></div>
+<div class="blob blob-b"></div>
+
+<div class="login-wrap">
+  <a href="/" class="login-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Kembali ke beranda
+  </a>
+
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-mark">🚀</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.5px">Malzz<span style="color:var(--blue)">Hosting</span></div>
+        <div style="font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase">Management Panel</div>
+      </div>
+    </div>
+
+    <h1 class="login-title">Selamat datang</h1>
+    <p class="login-sub">Masuk ke panel kamu. Admin otomatis terdeteksi.</p>
+
+    <div id="login-err" class="login-err"></div>
+
+    <form id="login-form" autocomplete="off">
+      <div class="form-group">
+        <label class="form-label">Username atau Email</label>
+        <div class="input-icon">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input class="input" type="text" id="username" placeholder="Username atau email kamu" autocomplete="off" required/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-wrap">
+          <input class="input" type="password" id="password" placeholder="Password kamu" autocomplete="current-password" required/>
+          <button type="button" class="pw-toggle" onclick="togglePw()">
+            <svg id="pw-hide" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <svg id="pw-show" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:22px;margin-top:-4px">
+        <input type="checkbox" id="remember" style="width:15px;height:15px;accent-color:var(--blue);cursor:pointer"/>
+        <label for="remember" style="font-size:13px;color:var(--dim);cursor:pointer">Ingat sesi ini</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" id="login-btn" style="width:100%;justify-content:center">
+        <span class="btn-spinner"></span>
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        Masuk ke Panel
+      </button>
+    </form>
+
+    <div class="divider">atau</div>
+
+    <a href="https://t.me/malzznih" target="_blank" class="btn btn-tg" style="width:100%;justify-content:center">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-8.609 3.33c-2.068.8-4.133 1.598-5.724 2.21a405.15 405.15 0 0 1-2.849 1.09c-.42.147-.94.306-1.35.854-.21.277-.42.713-.44 1.2-.022.49.097.96.333 1.29.426.59.92.602 1.227.6 1.91-.03 4.327-.087 7.185-.144l.06 2.396c.003.118.023.235.06.347.18.553.69.9 1.254.9.55 0 1.05-.333 1.27-.849l1.127-2.67 2.78 2.3a2.252 2.252 0 0 0 1.445.52c1.187 0 2.143-.92 2.219-2.1l1.143-16.543c.04-.562-.175-1.117-.593-1.507a2.234 2.234 0 0 0-1.516-.493z"/></svg>
+      Beli Akses Premium — @malzznih
+    </a>
+
+    <div class="login-footer">
+      Belum punya akun? <a href="https://t.me/malzznih" target="_blank">Hubungi @malzznih</a> untuk mendapatkan akses.
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+// Redirect kalau udah login
+const _t = API.token(), _u = API.user();
+if (_t && _u) {
+  location.href = _u.role === 'admin' ? '/pages/admin.html' : '/pages/dashboard.html';
+}
+
+function togglePw() {
+  const pw = document.getElementById('password');
+  const hide = document.getElementById('pw-hide');
+  const show = document.getElementById('pw-show');
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+  hide.style.display = pw.type === 'password' ? 'block' : 'none';
+  show.style.display = pw.type === 'text' ? 'block' : 'none';
+}
+
+document.getElementById('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-err');
+  errEl.style.display = 'none';
+
+  Utils.setLoading(btn, true);
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+
+  const res = await API.post('/auth', { username, password });
+  Utils.setLoading(btn, false);
+
+  if (res.success) {
+    API.setSession(res.token, res.user);
+    Toast.ok('Login berhasil!', `Halo ${res.user.displayName} 👋`);
+    setTimeout(() => {
+      location.href = res.user.role === 'admin' ? '/pages/admin.html' : '/pages/dashboard.html';
+    }, 700);
+  } else {
+    errEl.textContent = res.message || 'Login gagal. Cek username dan password kamu.';
+    errEl.style.display = 'block';
+    document.querySelector('.login-card').classList.add('shake');
+    setTimeout(() => document.querySelector('.login-card').classList.remove('shake'), 500);
+  }
+});
+</script>
+</body>
+</html>
